@@ -1,0 +1,17 @@
+Makefile for Named Entity Recognition (NER) Task - Revised Version
+Variables
+Install dependencies
+install:
+pip install $(REQUIREMENTS)
+
+Download dataset
+download:
+$(PYTHON) -c "from datasets import load_dataset; load_dataset('ai4bharat/naamapadam', 'hi')"
+
+Fine-tune model
+train:
+$(PYTHON) -c "from transformers import AutoModelForTokenClassification, AutoConfig, AutoTokenizer, TrainingArguments, Trainer, DataCollatorForTokenClassification; config = AutoConfig.from_pretrained('ai4bharat/indic-bert', num_labels=num_labels, finetuning_task='ner'); tokenizer = AutoTokenizer.from_pretrained('ai4bharat/indic-bert'); model = AutoModelForTokenClassification.from_pretrained('ai4bharat/indic-bert', num_labels=num_labels); trainer = Trainer(model=model, train_dataset=train_dataset, eval_dataset=eval_dataset, tokenizer=tokenizer, data_collator=data_collator, compute_metrics=compute_metrics, args=args); train_result = trainer.train(); model.save_pretrained('my_indicBERT'); tokenizer.save_pretrained('tokenizer_indicBERT')"
+
+Evaluate model
+eval:
+$(PYTHON) -c "from transformers import AutoModelForTokenClassification; model = AutoModelForTokenClassification.from_pretrained('/kaggle/working/my_indicBERT'); predictions, labels, metrics = trainer.predict(test_dataset); print(metrics)"
